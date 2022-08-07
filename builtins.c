@@ -72,3 +72,59 @@ int abort_prg(sh_t *data __attribute__((unused)))
 	free_data(data);
 	exit(code);
 }
+/**
+ * display_help - display the help menu
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
+ */
+int display_help(sh_t *data)
+{
+	int fd, fw, rd = 1;
+	char c;
+
+	fd = open(data->args[1], O_RDONLY);
+	if (fd < 0)
+	{
+		data->error_msg = _strdup("no help topics match\n");
+		return (FAIL);
+	}
+	while (rd > 0)
+	{
+		rd = read(fd, &c, 1);
+		fw = write(STDOUT_FILENO, &c, rd);
+		if (fw < 0)
+		{
+			data->error_msg = _strdup("cannot write: permission denied\n");
+			return (FAIL);
+		}
+	}
+	PRINT("\n");
+	return (SUCCESS);
+}
+/**
+ * handle_builtin - handle and manage the builtins cmd
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
+ */
+int handle_builtin(sh_t *data)
+{
+	blt_t blt[] = {
+		{"exit", abort_prg},
+		{"cd", change_dir},
+		{"help", display_help},
+		{NULL, NULL}
+	};
+	int i = 0;
+
+	while ((blt + i)->cmd)
+	{
+		if (_strcmp(data->args[0], (blt + i)->cmd) == 0)
+			return ((blt + i)->f(data));
+		i++;
+	}
+	return (FAIL);
+}
