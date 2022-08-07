@@ -68,3 +68,53 @@ int intlen(int num)
 	}
 	return (len);
 }
+/**
+ * print_error - prints error
+ * @data: the data structure pointer
+ *
+ * Return: (Success) a positive number
+ * ------- (Fail) a negative number
+ */
+int print_error(sh_t *data)
+{
+	char *idx = _itoa(data->index);
+
+	PRINT("hsh: ");
+	PRINT(idx);
+	PRINT(": ");
+	PRINT(data->args[0]);
+	PRINT(": ");
+	PRINT(data->error_msg);
+	free(idx);
+	return (0);
+}
+
+/**
+ * write_history - prints error
+ * @data: the data structure pointer
+ *
+ * Return: (Success) a positive number
+ * ------- (Fail) a negative number
+ */
+int write_history(sh_t *data __attribute__((unused)))
+{
+	char *filename = "history";
+	char *line_of_history = "this is a line of history";
+	ssize_t fd, w;
+	int len;
+
+	if (!filename)
+		return (-1);
+	fd = open(filename, O_RDWR | O_APPEND);
+	if (fd < 0)
+		return (-1);
+	if (line_of_history)
+	{
+		while (line_of_history[len])
+			len++;
+		w = write(fd, line_of_history, len);
+		if (w < 0)
+			return (-1);
+	}
+	return (1);
+}
